@@ -32,6 +32,7 @@
     "prepare": "vp config"
   },
   "devDependencies": {
+    "@github-ui/storybook-addon-performance-panel": "^1.1.4",
     "@rolldown/plugin-babel": "0.2.1",
     "@storybook/react-vite": "10.2.19",
     "@types/react": "19.2.7",

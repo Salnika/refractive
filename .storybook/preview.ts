@@ -1,9 +1,11 @@
-import type { Preview } from "@storybook/react-vite";
+import addonPerformancePanel from "@github-ui/storybook-addon-performance-panel";
+import { definePreview } from "@storybook/react-vite";
 
-const preview: Preview = {
+const preview = definePreview({
+  addons: [addonPerformancePanel()],
   parameters: {
     layout: "fullscreen",
   },
-};
+});
 
 export default preview;
