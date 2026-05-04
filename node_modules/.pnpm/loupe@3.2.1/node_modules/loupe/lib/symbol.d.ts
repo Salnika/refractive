@@ -1,2 +1,0 @@
-export default function inspectSymbol(value: symbol): string;
-//# sourceMappingURL=symbol.d.ts.map
