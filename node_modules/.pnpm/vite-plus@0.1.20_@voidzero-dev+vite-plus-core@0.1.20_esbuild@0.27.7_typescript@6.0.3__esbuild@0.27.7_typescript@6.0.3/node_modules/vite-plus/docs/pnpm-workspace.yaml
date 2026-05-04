@@ -1,0 +1,6 @@
+packages:
+  - .
+
+peerDependencyRules:
+  allowAny:
+    - vitepress

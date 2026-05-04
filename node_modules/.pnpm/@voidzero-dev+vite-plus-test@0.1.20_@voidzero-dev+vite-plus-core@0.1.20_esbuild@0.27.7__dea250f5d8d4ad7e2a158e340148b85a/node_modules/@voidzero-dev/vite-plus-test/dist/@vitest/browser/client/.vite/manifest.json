@@ -1,0 +1,24 @@
+{
+  "_utils-DmkAiRYk.js": {
+    "file": "__vitest_browser__/utils-DmkAiRYk.js",
+    "name": "utils"
+  },
+  "orchestrator.html": {
+    "file": "__vitest_browser__/orchestrator-DM4mHHP0.js",
+    "name": "orchestrator",
+    "src": "orchestrator.html",
+    "isEntry": true,
+    "imports": [
+      "_utils-DmkAiRYk.js"
+    ]
+  },
+  "tester/tester.html": {
+    "file": "__vitest_browser__/tester-Bf18VQr2.js",
+    "name": "tester",
+    "src": "tester/tester.html",
+    "isEntry": true,
+    "imports": [
+      "_utils-DmkAiRYk.js"
+    ]
+  }
+}

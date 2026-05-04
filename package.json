@@ -1,0 +1,52 @@
+{
+  "name": "@hashintel/refractive",
+  "version": "0.0.3",
+  "description": "HASH Refractive Filter Components",
+  "license": "(MIT OR Apache-2.0)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hashintel/hash.git",
+    "directory": "libs/@hashintel/refractive"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "dist",
+    "LICENSE",
+    "LICENSE-APACHE.md",
+    "LICENSE-MIT.md",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "vp build",
+    "dev": "storybook dev -p 6006",
+    "dev:lib": "vp build --watch",
+    "lint:eslint": "vp lint --type-aware --report-unused-disable-directives-severity=error .",
+    "fix:eslint": "vp lint --fix --type-aware --report-unused-disable-directives-severity=error .",
+    "lint:tsc": "tsgo --noEmit",
+    "prepublishOnly": "vp build",
+    "build-storybook": "storybook build",
+    "prepare": "vp config"
+  },
+  "devDependencies": {
+    "@rolldown/plugin-babel": "0.2.1",
+    "@storybook/react-vite": "10.2.19",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "@typescript/native-preview": "7.0.0-dev.20260315.1",
+    "@vitejs/plugin-react": "6.0.1",
+    "babel-plugin-react-compiler": "1.0.0",
+    "rolldown-plugin-dts": "0.22.5",
+    "storybook": "10.2.19",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "packageManager": "pnpm@10.33.2"
+}
