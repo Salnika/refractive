@@ -1,8 +1,9 @@
 import type { ComponentType } from "react";
-import { createElement, useEffect, useId, useRef, useState } from "react";
+import { createElement, useCallback, useEffect, useId, useState } from "react";
 import type { JSX } from "react/jsx-runtime";
 
 import { Filter } from "../components/filter";
+import { assignRef } from "../helpers/assign-ref";
 import { convex } from "../helpers/surface-equations";
 
 type RefractionProps = {
@@ -38,19 +39,31 @@ function createRefractiveComponent<
       ...componentProps
     } = props as P & RefractionProps & { ref?: React.Ref<HTMLElement> };
     const filterId = useId();
-    const internalRef = useRef<HTMLElement>(null);
+    const [element, setElement] = useState<HTMLElement | null>(null);
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
 
-    // If a ref is passed in props, use it; otherwise, use internalRef.
-    // If the passed ref is updated later, it will trigger a re-render.
-    const elementRef = externalRef ?? internalRef;
+    const elementRef = useCallback(
+      (nextElement: HTMLElement | null) => {
+        setElement(nextElement);
+        assignRef(externalRef, nextElement);
+      },
+      [externalRef],
+    );
 
     // TODO: (FE-43) Remove ResizeObserver and rely on `objectBoundingBox` to automatically size the filter.
     // This will removed the need of `useState` here.
     useEffect(() => {
-      const element = elementRef.current;
       if (!element) {
+        setWidth(0);
+        setHeight(0);
+        return;
+      }
+
+      if (typeof ResizeObserver === "undefined") {
+        const rect = element.getBoundingClientRect();
+        setWidth(rect.width);
+        setHeight(rect.height);
         return;
       }
 
@@ -73,36 +86,42 @@ function createRefractiveComponent<
       return () => {
         resizeObserver.disconnect();
       };
-    }, [elementRef]);
+    }, [element]);
+
+    const canRenderFilter =
+      width > 0 &&
+      height > 0 &&
+      typeof ImageData !== "undefined" &&
+      typeof document !== "undefined";
+
+    const componentStyle = {
+      ...componentProps.style,
+      backdropFilter: canRenderFilter ? `url(#${filterId})` : undefined,
+      borderRadius: refraction.radius,
+    };
 
     return (
       <>
-        <Filter
-          id={filterId}
-          scaleRatio={1} // Always 1 for now, could be animatable in the future
-          pixelRatio={6} // Always 6 for now, could be configurable in the future
-          width={width}
-          height={height}
-          radius={refraction.radius}
-          blur={refraction.blur ?? 0}
-          glassThickness={refraction.glassThickness ?? 70}
-          bezelWidth={refraction.bezelWidth ?? 0}
-          refractiveIndex={refraction.refractiveIndex ?? 1.5}
-          specularOpacity={refraction.specularOpacity ?? 0}
-          specularAngle={refraction.specularAngle ?? 0}
-          bezelHeightFn={refraction.bezelHeightFn ?? convex}
-        />
+        {canRenderFilter ? (
+          <Filter
+            id={filterId}
+            scaleRatio={1} // Always 1 for now, could be animatable in the future
+            pixelRatio={6} // Always 6 for now, could be configurable in the future
+            width={width}
+            height={height}
+            radius={refraction.radius}
+            blur={refraction.blur ?? 0}
+            glassThickness={refraction.glassThickness ?? 70}
+            bezelWidth={refraction.bezelWidth ?? 0}
+            refractiveIndex={refraction.refractiveIndex ?? 1.5}
+            specularOpacity={refraction.specularOpacity ?? 0}
+            specularAngle={refraction.specularAngle ?? Math.PI / 4}
+            bezelHeightFn={refraction.bezelHeightFn ?? convex}
+          />
+        ) : null}
 
         {/* @ts-expect-error Need to fix types in this file */}
-        <Component
-          {...componentProps}
-          ref={elementRef}
-          style={{
-            ...componentProps.style,
-            backdropFilter: `url(#${filterId})`,
-            borderRadius: refraction.radius,
-          }}
-        />
+        <Component {...componentProps} ref={elementRef} style={componentStyle} />
       </>
     );
   };

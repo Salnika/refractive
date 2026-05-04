@@ -3,7 +3,7 @@ import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { dts } from "rolldown-plugin-dts";
 import { defineConfig } from "vite-plus";
 
-const buildOnlyDtsPlugins = dts({ tsgo: true }).map((plugin) =>
+const buildOnlyDtsPlugins = dts({ sourcemap: true, tsgo: true }).map((plugin) =>
   // Ensure runs before Vite's native TypeScript transform.
   plugin.name.endsWith("fake-js")
     ? { ...plugin, apply: "build", enforce: "pre" }
@@ -15,9 +15,7 @@ export default defineConfig({
     "*": "vp check --fix",
   },
   fmt: {},
-  test: {
-    passWithNoTests: true,
-  },
+  test: {},
   lint: {
     plugins: ["import", "react", "jsx-a11y", "unicorn", "typescript"],
     categories: {

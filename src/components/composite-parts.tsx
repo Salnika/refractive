@@ -1,3 +1,4 @@
+import { calculateCompositeGeometry } from "../helpers/filter-geometry";
 import { splitImageDataToParts } from "../helpers/split-imagedata-to-parts";
 
 type CompositePartsProps = {
@@ -39,8 +40,18 @@ export const CompositeParts: React.FC<CompositePartsProps> = ({
     pixelRatio,
   });
 
-  const widthMinusCorner = width - cornerWidth;
-  const heightMinusCorner = height - cornerWidth;
+  const geometry = calculateCompositeGeometry({
+    cornerWidth,
+    height,
+    width,
+  });
+  const {
+    height: renderHeight,
+    heightMinusCorner,
+    renderCornerWidth,
+    width: renderWidth,
+    widthMinusCorner,
+  } = geometry;
 
   return (
     <>
@@ -49,8 +60,8 @@ export const CompositeParts: React.FC<CompositePartsProps> = ({
         href={parts.topLeft}
         x={0}
         y={0}
-        width={cornerWidth}
-        height={cornerWidth}
+        width={renderCornerWidth}
+        height={renderCornerWidth}
         result={`${result}_topLeft`}
         preserveAspectRatio="none"
       />
@@ -58,8 +69,8 @@ export const CompositeParts: React.FC<CompositePartsProps> = ({
         href={parts.top}
         x={0}
         y={0}
-        width={width}
-        height={cornerWidth}
+        width={renderWidth}
+        height={renderCornerWidth}
         result={`${result}_top`}
         preserveAspectRatio="none"
       />
@@ -67,8 +78,8 @@ export const CompositeParts: React.FC<CompositePartsProps> = ({
         href={parts.topRight}
         x={widthMinusCorner}
         y={0}
-        width={cornerWidth}
-        height={cornerWidth}
+        width={renderCornerWidth}
+        height={renderCornerWidth}
         result={`${result}_topRight`}
         preserveAspectRatio="none"
       />
@@ -76,8 +87,8 @@ export const CompositeParts: React.FC<CompositePartsProps> = ({
         href={parts.left}
         x={0}
         y={0}
-        width={cornerWidth}
-        height={height}
+        width={renderCornerWidth}
+        height={renderHeight}
         result={`${result}_left`}
         preserveAspectRatio="none"
       />
@@ -85,8 +96,8 @@ export const CompositeParts: React.FC<CompositePartsProps> = ({
         href={parts.right}
         y={0}
         x={widthMinusCorner}
-        width={cornerWidth}
-        height={height}
+        width={renderCornerWidth}
+        height={renderHeight}
         result={`${result}_right`}
         preserveAspectRatio="none"
       />
@@ -94,8 +105,8 @@ export const CompositeParts: React.FC<CompositePartsProps> = ({
         href={parts.bottomLeft}
         x={0}
         y={heightMinusCorner}
-        width={cornerWidth}
-        height={cornerWidth}
+        width={renderCornerWidth}
+        height={renderCornerWidth}
         result={`${result}_bottomLeft`}
         preserveAspectRatio="none"
       />
@@ -103,8 +114,8 @@ export const CompositeParts: React.FC<CompositePartsProps> = ({
         href={parts.bottom}
         x={0}
         y={heightMinusCorner}
-        width={width}
-        height={cornerWidth}
+        width={renderWidth}
+        height={renderCornerWidth}
         result={`${result}_bottom`}
         preserveAspectRatio="none"
       />
@@ -112,8 +123,8 @@ export const CompositeParts: React.FC<CompositePartsProps> = ({
         href={parts.bottomRight}
         x={widthMinusCorner}
         y={heightMinusCorner}
-        width={cornerWidth}
-        height={cornerWidth}
+        width={renderCornerWidth}
+        height={renderCornerWidth}
         result={`${result}_bottomRight`}
         preserveAspectRatio="none"
       />
@@ -125,8 +136,8 @@ export const CompositeParts: React.FC<CompositePartsProps> = ({
         href={parts.center}
         x={0}
         y={0}
-        width={width}
-        height={height}
+        width={renderWidth}
+        height={renderHeight}
         result={`${result}_base`}
         preserveAspectRatio="none"
       />

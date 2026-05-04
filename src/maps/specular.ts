@@ -18,7 +18,7 @@ export function calculateSpecularImage(props: {
   const radius = Math.min(props.radius * pixelRatio, width / 2, height / 2);
 
   // Vector along which we should see specular
-  const specular_vector = [Math.cos(specularAngle), Math.sin(specularAngle)] as const;
+  const specularVector = [Math.cos(specularAngle), Math.sin(specularAngle)] as const;
 
   return calculateCircleMap({
     width,
@@ -37,17 +37,25 @@ export function calculateSpecularImage(props: {
       _angle,
       opacity,
     ) {
+      if (distanceFromCenter === 0) {
+        return;
+      }
+
       const distanceFromSide = radius - distanceFromCenter;
+      const edgeRatio = distanceFromSide / pixelRatio;
+
+      if (edgeRatio <= 0 || edgeRatio >= 2) {
+        return;
+      }
 
       // Viewed from top
       const cos = x / distanceFromCenter;
       const sin = -y / distanceFromCenter;
 
       // Dot product of orientation
-      const dotProduct = Math.abs(cos * specular_vector[0] + sin * specular_vector[1]);
+      const dotProduct = Math.max(0, cos * specularVector[0] + sin * specularVector[1]);
 
-      const coefficient =
-        dotProduct * Math.sqrt(1 - (1 - distanceFromSide / (1 * pixelRatio)) ** 2);
+      const coefficient = dotProduct * Math.sqrt(1 - (1 - edgeRatio) ** 2);
 
       const color = 255 * coefficient;
       const finalOpacity = color * coefficient * opacity;

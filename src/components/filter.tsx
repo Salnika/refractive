@@ -50,6 +50,7 @@ export const Filter: React.FC<FilterProps> = ({
   refractiveIndex,
   scaleRatio,
   specularOpacity,
+  specularAngle,
   bezelHeightFn,
   pixelRatio,
   hideTop,
@@ -89,7 +90,7 @@ export const Filter: React.FC<FilterProps> = ({
     width: imageSide,
     height: imageSide,
     radius,
-    specularAngle: Math.PI / 4, // Default angle, could be made configurable
+    specularAngle,
     pixelRatio,
   });
 
