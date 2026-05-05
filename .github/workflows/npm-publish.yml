@@ -1,0 +1,100 @@
+name: Publish npm
+
+on:
+  push:
+    tags:
+      - "release/*"
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: publish-npm
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate release tag
+        run: |
+          if [[ ! "${GITHUB_REF_NAME}" =~ ^release/[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Expected tag format: release/x.y.z"
+            exit 1
+          fi
+
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: "22"
+          cache: true
+
+      - name: Validate package version
+        run: |
+          tag_version="${GITHUB_REF_NAME#release/}"
+          package_version="$(node -p "require('./package.json').version")"
+
+          if [[ "${package_version}" != "${tag_version}" ]]; then
+            echo "Tag version (${tag_version}) must match package.json version (${package_version})."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: vp install
+
+      - name: Check formatting, lint, and types
+        run: vp check
+
+      - name: Run tests
+        run: vp test
+
+      - name: Build package
+        run: vp build
+
+      - name: Verify package contents
+        run: npm pack --dry-run
+
+  publish:
+    name: Publish package
+    needs: verify
+    runs-on: ubuntu-latest
+    environment:
+      name: "npm"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: "22"
+          cache: true
+
+      - name: Install dependencies
+        run: vp install
+
+      - name: Build package
+        run: vp build
+
+      - name: Configure npm auth
+        run: npm config set //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          body_path: CHANGELOG.md

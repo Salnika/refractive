@@ -2,7 +2,19 @@
 
 # refractive
 
+[![PR checks](https://github.com/salnika/refractive/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/salnika/refractive/actions/workflows/pr-checks.yml)
+[![Storybook Pages](https://github.com/salnika/refractive/actions/workflows/storybook-pages.yml/badge.svg)](https://github.com/salnika/refractive/actions/workflows/storybook-pages.yml)
+[![Publish npm](https://github.com/salnika/refractive/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/salnika/refractive/actions/workflows/npm-publish.yml)
+[![npm version](https://img.shields.io/npm/v/refractive.svg)](https://www.npmjs.com/package/refractive)
+[![Storybook](https://img.shields.io/badge/storybook-live-ff4785?logo=storybook&logoColor=white)](https://salnika.github.io/refractive/)
+
 Based on the [@hashintel/refractive](https://github.com/hashintel/hash/tree/main/libs/%40hashintel/refractive) lib
+
+## Links
+
+- [Storybook](https://salnika.github.io/refractive/)
+- [npm package](https://www.npmjs.com/package/refractive)
+- [GitHub Actions](https://github.com/salnika/refractive/actions)
 
 ## Install
 
@@ -95,5 +107,18 @@ vp install
 ```sh
 vp run dev
 ```
+
+## Release
+
+The npm publish workflow runs when a `release/x.y.z` tag is pushed. It requires an `NPM_TOKEN` repository secret with publish access to the `refractive` package.
+
+For tag-based releases, the tag version must match `package.json`:
+
+```sh
+git tag release/0.0.5
+git push origin release/0.0.5
+```
+
+Publication is gated by the `npm` GitHub environment. Configure that environment with required reviewers in the repository settings to require manual approval before `npm publish` runs.
 
 [^1]: This project is not affiliated with viteplus

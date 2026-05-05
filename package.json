@@ -2,7 +2,7 @@
   "name": "refractive",
   "version": "0.0.4",
   "description": "improved HASH Refractive Filter Components",
-  "license": "(MIT OR Apache-2.0)",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/salnika/refractive.git"
