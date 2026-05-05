@@ -59,6 +59,8 @@ export function calculateDisplacementMap(props: {
   pixelRatio: number;
 }) {
   const { pixelRatio, maximumDisplacement, precomputedDisplacementMap } = props;
+  const displacementScale =
+    maximumDisplacement > 0 && Number.isFinite(maximumDisplacement) ? maximumDisplacement : 1;
 
   const width = Math.round(props.width * pixelRatio);
   const height = Math.round(props.height * pixelRatio);
@@ -87,13 +89,14 @@ export function calculateDisplacementMap(props: {
       const cos = Math.cos(angle);
       const sin = Math.sin(angle);
 
-      const ratio = bezel > radius ? distanceFromBorderRatio : distanceFromBorder / bezel;
+      const ratio =
+        bezel > radius ? distanceFromBorderRatio : bezel > 0 ? distanceFromBorder / bezel : 0;
 
       const bezelIndex = Math.round(ratio * precomputedDisplacementMap.length);
       const distance = precomputedDisplacementMap[bezelIndex] ?? 0;
 
-      const dX = (-cos * distance) / maximumDisplacement;
-      const dY = (-sin * distance) / maximumDisplacement;
+      const dX = (-cos * distance) / displacementScale;
+      const dY = (-sin * distance) / displacementScale;
 
       buffer[offset] = 128 + dX * 127 * opacity; // R
       buffer[offset + 1] = 128 + dY * 127 * opacity; // G

@@ -1,238 +1,239 @@
+import type { CSSProperties } from "react";
+
+export const storyFontFamily = '"Google Sans", "Product Sans", "Helvetica Neue", Arial, sans-serif';
+
+const bandStyles: Array<CSSProperties & { key: string }> = [
+  {
+    key: "rose",
+    background: "linear-gradient(135deg, #ff4d8d 0%, #ffb36b 100%)",
+    height: 280,
+    left: "-8%",
+    top: 100,
+    transform: "rotate(-14deg)",
+    width: "70%",
+  },
+  {
+    key: "cyan",
+    background: "linear-gradient(135deg, #16d9e3 0%, #46a6ff 55%, #6d5dfc 100%)",
+    height: 220,
+    right: "-12%",
+    top: 380,
+    transform: "rotate(18deg)",
+    width: "64%",
+  },
+  {
+    key: "lime",
+    background: "linear-gradient(135deg, #c8ff4d 0%, #2ee59d 100%)",
+    height: 180,
+    left: "18%",
+    top: 760,
+    transform: "rotate(8deg)",
+    width: "48%",
+  },
+  {
+    key: "violet",
+    background: "linear-gradient(135deg, #8057ff 0%, #f85fd0 100%)",
+    height: 260,
+    right: "8%",
+    top: 1060,
+    transform: "rotate(-10deg)",
+    width: "54%",
+  },
+];
+
+const tileStyles: Array<CSSProperties & { key: string }> = [
+  {
+    key: "spectrum",
+    background: "linear-gradient(135deg, #141414 0%, #303844 100%)",
+    borderColor: "rgba(255, 255, 255, 0.28)",
+    gridColumn: "span 7",
+    minHeight: 300,
+  },
+  {
+    key: "signal",
+    background: "linear-gradient(135deg, #ffdf6e 0%, #ff6b6b 100%)",
+    color: "#17120a",
+    gridColumn: "span 5",
+    minHeight: 300,
+  },
+  {
+    key: "field",
+    background: "linear-gradient(135deg, #24d3ee 0%, #4d68ff 100%)",
+    gridColumn: "span 4",
+    minHeight: 220,
+  },
+  {
+    key: "phase",
+    background: "linear-gradient(135deg, #f7f4ea 0%, #dce6ff 100%)",
+    color: "#172033",
+    gridColumn: "span 8",
+    minHeight: 220,
+  },
+];
+
 export const ExampleArticle: React.FC = () => {
   return (
     <div
       style={{
-        padding: "2rem",
-        maxWidth: "800px",
-        margin: "0 auto",
-        lineHeight: "1.6",
-        fontSize: "16px",
-        color: "#333",
+        background: "linear-gradient(180deg, #f7f4ea 0%, #dbe9ff 34%, #f4e2ff 68%, #f7f4ea 100%)",
+        color: "#10131a",
+        fontFamily: storyFontFamily,
+        minHeight: 1500,
+        overflow: "hidden",
+        position: "relative",
       }}
     >
-      <h1
+      <div
         style={{
-          fontSize: "7rem",
-          lineHeight: "7rem",
-          marginBottom: "2rem",
-          color: "#1a365d",
-        }}
-      >
-        Understanding Optics and Refraction
-      </h1>
-
-      <p>
-        Optics, the branch of physics concerned with the behavior and properties of light, has
-        fascinated scientists and philosophers for millennia. From the ancient Greeks' understanding
-        of vision to modern quantum optics, this field continues to reveal the fundamental nature of
-        electromagnetic radiation and its interaction with matter. The study of optics encompasses
-        not only the visible spectrum but extends to infrared, ultraviolet, and other forms of
-        electromagnetic radiation.
-      </p>
-
-      <p>
-        The phenomenon of refraction stands as one of the most fundamental concepts in optics. When
-        light travels from one medium to another with a different optical density, it bends at the
-        interface between the two materials. This bending occurs because light travels at different
-        speeds in different materials, a property quantified by the refractive index of each medium.
-      </p>
-
-      <h2
-        style={{
-          fontSize: "5rem",
-          lineHeight: "5rem",
-          marginTop: "2rem",
-          marginBottom: "1rem",
-          color: "#2d3748",
-        }}
-      >
-        The Physics of Light Propagation
-      </h2>
-
-      <p>
-        Light, as an electromagnetic wave, exhibits both wave and particle characteristics. When
-        considering refraction, we primarily focus on its wave nature. The speed of light in a
-        vacuum is approximately 299,792,458 meters per second, but this speed decreases when light
-        enters a denser medium. The ratio of the speed of light in a vacuum to its speed in a given
-        material defines that material's refractive index.
-      </p>
-
-      <img
-        src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2728&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        alt="Abstract colorful shapes"
-        style={{
-          width: "100%",
-          height: "400px",
-          objectFit: "cover",
-          borderRadius: "8px",
-          margin: "2rem 0",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+          backgroundImage:
+            "linear-gradient(rgba(16, 19, 26, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(16, 19, 26, 0.08) 1px, transparent 1px)",
+          backgroundSize: "42px 42px",
+          inset: 0,
+          maskImage: "linear-gradient(180deg, black 0%, transparent 92%)",
+          position: "absolute",
         }}
       />
 
-      <p>
-        Snell's Law, formulated by Willebrord Snellius in 1621, mathematically describes the
-        relationship between the angles of incidence and refraction. The law states that the ratio
-        of the sines of the angles of incidence and refraction is equivalent to the ratio of phase
-        velocities in the two media, or equivalently, to the opposite ratio of the indices of
-        refraction.
-      </p>
+      {bandStyles.map(({ key, ...style }) => (
+        <div
+          key={key}
+          style={{
+            ...style,
+            border: "1px solid rgba(255, 255, 255, 0.45)",
+            borderRadius: 8,
+            boxShadow: "0 28px 80px rgba(24, 31, 54, 0.22)",
+            opacity: 0.92,
+            position: "absolute",
+          }}
+        />
+      ))}
 
-      <h2
+      <main
         style={{
-          fontSize: "5rem",
-          lineHeight: "5rem",
-          marginTop: "2rem",
-          marginBottom: "1rem",
-          color: "#2d3748",
+          margin: "0 auto",
+          maxWidth: 1040,
+          padding: "88px 32px 140px",
+          position: "relative",
         }}
       >
-        Applications in Modern Technology
-      </h2>
+        <p
+          style={{
+            fontSize: 14,
+            fontWeight: 700,
+            letterSpacing: 0,
+            margin: "0 0 18px",
+            textTransform: "uppercase",
+          }}
+        >
+          Optical field 04
+        </p>
+        <h1
+          style={{
+            fontSize: "clamp(72px, 13vw, 168px)",
+            fontWeight: 900,
+            letterSpacing: 0,
+            lineHeight: 0.82,
+            margin: 0,
+            maxWidth: 980,
+          }}
+        >
+          REFRACTIVE
+        </h1>
+        <p
+          style={{
+            fontSize: "clamp(22px, 3vw, 44px)",
+            fontWeight: 700,
+            lineHeight: 1.05,
+            margin: "24px 0 76px",
+            maxWidth: 680,
+          }}
+        >
+          Chromatic shapes, hard edges, soft light, and layered depth.
+        </p>
 
-      <p>
-        The principles of refraction find extensive applications in modern technology. Optical
-        lenses, the foundation of cameras, microscopes, and telescopes, rely entirely on controlled
-        refraction to focus light. The careful shaping of glass or other transparent materials
-        allows engineers to manipulate light paths with extraordinary precision, enabling everything
-        from corrective eyewear to sophisticated scientific instruments.
-      </p>
+        <section
+          style={{
+            display: "grid",
+            gap: 18,
+            gridTemplateColumns: "repeat(12, minmax(0, 1fr))",
+          }}
+        >
+          {tileStyles.map(({ key, ...style }) => (
+            <article
+              key={key}
+              style={{
+                ...style,
+                border: `1px solid ${style.borderColor ?? "rgba(255, 255, 255, 0.48)"}`,
+                borderRadius: 8,
+                boxShadow: "0 24px 70px rgba(18, 24, 38, 0.18)",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                overflow: "hidden",
+                padding: 28,
+                position: "relative",
+              }}
+            >
+              <div
+                style={{
+                  background:
+                    "linear-gradient(90deg, currentColor 0 18%, transparent 18% 24%, currentColor 24% 52%, transparent 52% 58%, currentColor 58% 100%)",
+                  height: 10,
+                  opacity: 0.2,
+                  width: "100%",
+                }}
+              />
+              <strong
+                style={{
+                  fontSize: "clamp(28px, 4vw, 58px)",
+                  fontWeight: 900,
+                  letterSpacing: 0,
+                  lineHeight: 0.9,
+                  textTransform: "uppercase",
+                }}
+              >
+                {key}
+              </strong>
+            </article>
+          ))}
+        </section>
 
-      <p>
-        Fiber optic communications represent perhaps the most revolutionary application of optical
-        principles in recent decades. By utilizing total internal reflection, a phenomenon closely
-        related to refraction, optical fibers can transmit light signals across vast distances with
-        minimal loss. This technology forms the backbone of modern internet infrastructure and
-        high-speed data transmission.
-      </p>
-
-      <h2
-        style={{
-          fontSize: "5rem",
-          lineHeight: "5rem",
-          marginTop: "2rem",
-          marginBottom: "1rem",
-          color: "#2d3748",
-        }}
-      >
-        Dispersion and Chromatic Effects
-      </h2>
-
-      <p>
-        One of the most visually striking aspects of refraction is dispersion, the separation of
-        white light into its component colors. This phenomenon occurs because different wavelengths
-        of light have slightly different refractive indices in the same medium. The familiar rainbow
-        created by a prism demonstrates this principle, as shorter wavelengths (blue and violet) are
-        bent more than longer wavelengths (red and orange).
-      </p>
-
-      <img
-        src="https://images.unsplash.com/photo-1496096265110-f83ad7f96608?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        alt="Light refraction through prism"
-        style={{
-          width: "100%",
-          height: "400px",
-          objectFit: "cover",
-          borderRadius: "8px",
-          margin: "2rem 0",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-        }}
-      />
-
-      <p>
-        Atmospheric refraction creates numerous optical phenomena that we observe in daily life.
-        Mirages, the apparent bending of the horizon, and the flattened appearance of the sun at
-        sunset all result from light bending as it passes through air layers of varying density and
-        temperature. These effects remind us that our atmosphere itself acts as a complex optical
-        medium.
-      </p>
-
-      <h2
-        style={{
-          fontSize: "5rem",
-          lineHeight: "5rem",
-          marginTop: "2rem",
-          marginBottom: "1rem",
-          color: "#2d3748",
-        }}
-      >
-        Quantum Optics and Modern Research
-      </h2>
-
-      <p>
-        Modern optics extends far beyond classical wave theory into the realm of quantum mechanics.
-        Quantum optics studies the quantum mechanical properties of light and its interaction with
-        matter at the most fundamental level. This field has led to revolutionary technologies such
-        as lasers, which produce coherent light through stimulated emission of radiation.
-      </p>
-
-      <img
-        src="https://images.unsplash.com/photo-1579547621113-e4bb2a19bdd6?q=80&w=1239&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        alt="Scientific equipment"
-        style={{
-          width: "100%",
-          height: "400px",
-          objectFit: "cover",
-          borderRadius: "8px",
-          margin: "2rem 0",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-        }}
-      />
-
-      <p>
-        Research in metamaterials has opened entirely new possibilities for manipulating light.
-        These artificially structured materials can exhibit refractive indices not found in nature,
-        including negative refraction. Such materials could potentially enable cloaking devices and
-        perfect lenses that surpass the diffraction limit of conventional optics.
-      </p>
-
-      <h2
-        style={{
-          fontSize: "5rem",
-          lineHeight: "5rem",
-          marginTop: "2rem",
-          marginBottom: "1rem",
-          color: "#2d3748",
-        }}
-      >
-        Biological Optics
-      </h2>
-
-      <p>
-        Nature has evolved sophisticated optical systems that often surpass human engineering in
-        their elegance and efficiency. The compound eyes of insects, the reflective tapetum in
-        nocturnal animals, and the focusing mechanisms of vertebrate eyes all demonstrate remarkable
-        applications of optical principles. These biological systems continue to inspire biomimetic
-        approaches to optical design.
-      </p>
-
-      <p>
-        The study of how living organisms interact with light extends to phenomena such as
-        bioluminescence, structural coloration in butterflies and birds, and the photosynthetic
-        machinery of plants. These systems often exploit quantum effects and molecular-scale optics
-        in ways that push the boundaries of our understanding of light-matter interactions.
-      </p>
-
-      <img
-        src="https://images.unsplash.com/photo-1637789594401-5a0dac0d3e36?q=80&w=1294&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        alt="Natural light patterns"
-        style={{
-          width: "100%",
-          height: "400px",
-          objectFit: "cover",
-          borderRadius: "8px",
-          margin: "2rem 0",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-        }}
-      />
-
-      <p style={{ marginBottom: "4rem" }}>
-        As we continue to push the frontiers of optical science, from quantum computing applications
-        to advanced imaging systems, the fundamental principles of refraction and light propagation
-        remain as relevant as ever. The interplay between theoretical understanding and practical
-        application continues to drive innovations that shape our technological landscape and deepen
-        our comprehension of the physical world.
-      </p>
+        <section
+          style={{
+            alignItems: "stretch",
+            display: "grid",
+            gap: 18,
+            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+            marginTop: 18,
+          }}
+        >
+          {["Prism", "Surface", "Light"].map((label) => (
+            <div
+              key={label}
+              style={{
+                background:
+                  "linear-gradient(135deg, rgba(255,255,255,0.66) 0%, rgba(255,255,255,0.24) 100%)",
+                border: "1px solid rgba(255, 255, 255, 0.58)",
+                borderRadius: 8,
+                minHeight: 190,
+                padding: 24,
+              }}
+            >
+              <span
+                style={{
+                  display: "block",
+                  fontSize: 34,
+                  fontWeight: 900,
+                  letterSpacing: 0,
+                  lineHeight: 1,
+                }}
+              >
+                {label}
+              </span>
+            </div>
+          ))}
+        </section>
+      </main>
     </div>
   );
 };

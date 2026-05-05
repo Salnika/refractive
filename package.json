@@ -1,12 +1,11 @@
 {
-  "name": "@hashintel/refractive",
-  "version": "0.0.3",
-  "description": "HASH Refractive Filter Components",
+  "name": "refractive",
+  "version": "0.0.4",
+  "description": "improved HASH Refractive Filter Components",
   "license": "(MIT OR Apache-2.0)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hashintel/hash.git",
-    "directory": "libs/@hashintel/refractive"
+    "url": "https://github.com/salnika/refractive.git"
   },
   "files": [
     "CHANGELOG.md",
@@ -20,6 +19,12 @@
   "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "scripts": {
     "build": "vp build",
     "dev": "storybook dev -p 6006",

@@ -15,7 +15,9 @@ export default defineConfig({
     "*": "vp check --fix",
   },
   fmt: {},
-  test: {},
+  test: {
+    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+  },
   lint: {
     plugins: ["import", "react", "jsx-a11y", "unicorn", "typescript"],
     categories: {

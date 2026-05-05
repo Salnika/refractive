@@ -1,12 +1,11 @@
 import { calculateCompositeGeometry } from "../helpers/filter-geometry";
-import { splitImageDataToParts } from "../helpers/split-imagedata-to-parts";
+import type { Parts } from "../helpers/split-imagedata-to-parts";
 
 type CompositePartsProps = {
-  imageData: ImageData;
   cornerWidth: number;
-  pixelRatio: number;
   width: number;
   height: number;
+  parts: Parts;
   result: string;
   hideTop?: boolean;
   hideBottom?: boolean;
@@ -23,23 +22,16 @@ type CompositePartsProps = {
  * @return {JSX.Element} Fragment containing all image parts for the refractive effect, along with compositing.
  */
 export const CompositeParts: React.FC<CompositePartsProps> = ({
-  imageData,
   cornerWidth,
   width,
   height,
-  pixelRatio,
+  parts,
   result,
   hideTop,
   hideBottom,
   hideLeft,
   hideRight,
 }) => {
-  const parts = splitImageDataToParts({
-    imageData,
-    cornerWidth,
-    pixelRatio,
-  });
-
   const geometry = calculateCompositeGeometry({
     cornerWidth,
     height,

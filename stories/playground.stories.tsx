@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { concave, convex, convexCircle, lip } from "../src/helpers/surface-equations";
 import { refractive } from "../src/hoc/refractive";
-import { ExampleArticle } from "./example-article";
+import { ExampleArticle, storyFontFamily } from "./example-article";
 
 const surfaceEquations = {
   concave,
@@ -29,6 +29,22 @@ type PlaygroundArgs = {
 
 const surfaceEquationNames = Object.keys(surfaceEquations) as SurfaceEquationName[];
 
+const sharedGlassStyle = {
+  alignItems: "center",
+  boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 24px 80px rgba(15, 23, 42, 0.22)",
+  color: "#10131a",
+  display: "flex",
+  fontFamily: storyFontFamily,
+  fontSize: 18,
+  fontWeight: 800,
+  justifyContent: "center",
+  letterSpacing: 0,
+  overflow: "auto",
+  resize: "both",
+  textTransform: "uppercase",
+  zIndex: 1,
+} satisfies React.CSSProperties;
+
 const GlassOverArticle = ({
   backgroundOpacity,
   bezelHeightFn,
@@ -45,18 +61,13 @@ const GlassOverArticle = ({
   <div style={{ position: "relative" }}>
     <refractive.div
       style={{
-        position: "sticky",
-        top: 100,
-        marginLeft: 50,
-        width: glassWidth,
-        height: glassHeight,
-        resize: "both",
-        overflow: "auto",
+        ...sharedGlassStyle,
         backgroundColor: `rgba(255, 255, 255, ${backgroundOpacity})`,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1,
+        height: glassHeight,
+        left: 56,
+        position: "fixed",
+        top: 100,
+        width: glassWidth,
       }}
       refraction={{
         bezelHeightFn: surfaceEquations[bezelHeightFn],
@@ -80,7 +91,7 @@ const meta = {
   title: "Playground",
   component: GlassOverArticle,
   args: {
-    backgroundOpacity: 0.6,
+    backgroundOpacity: 0.5,
     bezelHeightFn: "convex",
     bezelWidth: 30,
     blur: 2,
@@ -135,3 +146,67 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+export const FrostedPanel: Story = {
+  args: {
+    backgroundOpacity: 0.48,
+    bezelHeightFn: "convex",
+    bezelWidth: 24,
+    blur: 4,
+    glassHeight: 220,
+    glassThickness: 80,
+    glassWidth: 340,
+    radius: 28,
+    refractiveIndex: 1.45,
+    specularAngleDegrees: 115,
+    specularOpacity: 0.72,
+  },
+};
+
+export const CrystalLens: Story = {
+  args: {
+    backgroundOpacity: 0.28,
+    bezelHeightFn: "convexCircle",
+    bezelWidth: 46,
+    blur: 1,
+    glassHeight: 260,
+    glassThickness: 150,
+    glassWidth: 420,
+    radius: 56,
+    refractiveIndex: 1.82,
+    specularAngleDegrees: 42,
+    specularOpacity: 0.95,
+  },
+};
+
+export const SoftBubble: Story = {
+  args: {
+    backgroundOpacity: 0.38,
+    bezelHeightFn: "concave",
+    bezelWidth: 34,
+    blur: 8,
+    glassHeight: 260,
+    glassThickness: 95,
+    glassWidth: 260,
+    radius: 120,
+    refractiveIndex: 1.36,
+    specularAngleDegrees: 210,
+    specularOpacity: 0.45,
+  },
+};
+
+export const SharpPrism: Story = {
+  args: {
+    backgroundOpacity: 0.22,
+    bezelHeightFn: "lip",
+    bezelWidth: 64,
+    blur: 0,
+    glassHeight: 180,
+    glassThickness: 220,
+    glassWidth: 520,
+    radius: 12,
+    refractiveIndex: 2.18,
+    specularAngleDegrees: 300,
+    specularOpacity: 1,
+  },
+};

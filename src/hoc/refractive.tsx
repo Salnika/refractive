@@ -1,23 +1,21 @@
-import type { ComponentType } from "react";
-import { createElement, useCallback, useEffect, useId, useState } from "react";
+import type { ComponentType, ReactNode, Ref } from "react";
+import { createElement, useCallback, useId, useState } from "react";
 import type { JSX } from "react/jsx-runtime";
 
 import { Filter } from "../components/filter";
+import { FilterPortal } from "../components/filter-portal";
 import { assignRef } from "../helpers/assign-ref";
-import { convex } from "../helpers/surface-equations";
+import { type RefractionProps, normalizeRefraction } from "./refraction-options";
+import { useElementSize } from "./use-element-size";
 
-type RefractionProps = {
-  refraction: {
-    radius: number;
-    blur?: number;
-    glassThickness?: number;
-    bezelWidth?: number;
-    refractiveIndex?: number;
-    specularOpacity?: number;
-    specularAngle?: number;
-    bezelHeightFn?: (x: number) => number;
-  };
+type RefractiveRef = Ref<HTMLElement>;
+type RefAwareProps = {
+  ref?: RefractiveRef;
+  style?: React.CSSProperties;
 };
+type HostComponentProps = RefAwareProps & {
+  children?: ReactNode;
+} & Record<string, unknown>;
 
 /**
  * @private
@@ -25,23 +23,17 @@ type RefractionProps = {
  *
  * Exposed in `refractive` proxy, which also exposes JSXIntrinsicElements as keys.
  */
-function createRefractiveComponent<
-  P extends {
-    children?: React.ReactElement;
-    style?: React.CSSProperties;
-    ref?: React.RefObject<HTMLElement>;
-  },
->(Component: ComponentType<P>): ComponentType<P & RefractionProps> {
-  return (props: P & RefractionProps) => {
-    const {
-      refraction,
-      ref: externalRef,
-      ...componentProps
-    } = props as P & RefractionProps & { ref?: React.Ref<HTMLElement> };
-    const filterId = useId();
+function createRefractiveComponent<P extends RefAwareProps>(
+  Component: ComponentType<P>,
+  displayName = Component.name,
+): ComponentType<P & RefractionProps> {
+  const RefractiveComponent: ComponentType<P & RefractionProps> = (props) => {
+    const { refraction, ref: externalRef, ...componentProps } = props;
+    const reactId = useId();
+    const filterId = `refractive-${reactId.replace(/:/g, "")}`;
     const [element, setElement] = useState<HTMLElement | null>(null);
-    const [width, setWidth] = useState(0);
-    const [height, setHeight] = useState(0);
+    const { width, height } = useElementSize(element);
+    const normalizedRefraction = normalizeRefraction(refraction);
 
     const elementRef = useCallback(
       (nextElement: HTMLElement | null) => {
@@ -50,43 +42,6 @@ function createRefractiveComponent<
       },
       [externalRef],
     );
-
-    // TODO: (FE-43) Remove ResizeObserver and rely on `objectBoundingBox` to automatically size the filter.
-    // This will removed the need of `useState` here.
-    useEffect(() => {
-      if (!element) {
-        setWidth(0);
-        setHeight(0);
-        return;
-      }
-
-      if (typeof ResizeObserver === "undefined") {
-        const rect = element.getBoundingClientRect();
-        setWidth(rect.width);
-        setHeight(rect.height);
-        return;
-      }
-
-      const resizeObserver = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-          const borderBox = entry.borderBoxSize[0];
-
-          if (borderBox) {
-            setWidth(borderBox.inlineSize);
-            setHeight(borderBox.blockSize);
-          } else {
-            setWidth(entry.contentRect.width);
-            setHeight(entry.contentRect.height);
-          }
-        }
-      });
-
-      resizeObserver.observe(element);
-
-      return () => {
-        resizeObserver.disconnect();
-      };
-    }, [element]);
 
     const canRenderFilter =
       width > 0 &&
@@ -97,34 +52,41 @@ function createRefractiveComponent<
     const componentStyle = {
       ...componentProps.style,
       backdropFilter: canRenderFilter ? `url(#${filterId})` : undefined,
-      borderRadius: refraction.radius,
+      borderRadius: normalizedRefraction.radius,
     };
 
     return (
       <>
         {canRenderFilter ? (
-          <Filter
-            id={filterId}
-            scaleRatio={1} // Always 1 for now, could be animatable in the future
-            pixelRatio={6} // Always 6 for now, could be configurable in the future
-            width={width}
-            height={height}
-            radius={refraction.radius}
-            blur={refraction.blur ?? 0}
-            glassThickness={refraction.glassThickness ?? 70}
-            bezelWidth={refraction.bezelWidth ?? 0}
-            refractiveIndex={refraction.refractiveIndex ?? 1.5}
-            specularOpacity={refraction.specularOpacity ?? 0}
-            specularAngle={refraction.specularAngle ?? Math.PI / 4}
-            bezelHeightFn={refraction.bezelHeightFn ?? convex}
-          />
+          <FilterPortal>
+            <Filter
+              id={filterId}
+              scaleRatio={1}
+              pixelRatio={normalizedRefraction.pixelRatio}
+              width={width}
+              height={height}
+              radius={normalizedRefraction.radius}
+              blur={normalizedRefraction.blur}
+              glassThickness={normalizedRefraction.glassThickness}
+              bezelWidth={normalizedRefraction.bezelWidth}
+              refractiveIndex={normalizedRefraction.refractiveIndex}
+              specularOpacity={normalizedRefraction.specularOpacity}
+              specularAngle={normalizedRefraction.specularAngle}
+              bezelHeightFn={normalizedRefraction.bezelHeightFn}
+            />
+          </FilterPortal>
         ) : null}
 
-        {/* @ts-expect-error Need to fix types in this file */}
-        <Component {...componentProps} ref={elementRef} style={componentStyle} />
+        <Component {...(componentProps as unknown as P)} ref={elementRef} style={componentStyle} />
       </>
     );
   };
+
+  RefractiveComponent.displayName = `Refractive(${
+    displayName.length > 0 ? displayName : "Component"
+  })`;
+
+  return RefractiveComponent;
 }
 
 type HTMLElements = {
@@ -139,7 +101,20 @@ type RefractiveFunction = (<P extends object>(
 /**
  * Cache for JSX intrinsic elements refractive components, created on demand.
  */
-const CACHE = new Map<string, ComponentType<any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
+const CACHE = new Map<
+  keyof JSX.IntrinsicElements,
+  ComponentType<HostComponentProps & RefractionProps>
+>();
+
+function createHostComponent(
+  elementName: keyof JSX.IntrinsicElements,
+): ComponentType<HostComponentProps> {
+  const HostComponent: ComponentType<HostComponentProps> = ({ children, ...props }) =>
+    createElement(elementName, props, children);
+
+  HostComponent.displayName = `refractive.${String(elementName)}`;
+  return HostComponent;
+}
 
 /**
  * Refractive is a higher-order component (HOC) that can wrap any HTML element or custom React component
@@ -177,12 +152,17 @@ const CACHE = new Map<string, ComponentType<any>>(); // eslint-disable-line @typ
  * @returns Same component with refraction props.
  */
 export const refractive = new Proxy(createRefractiveComponent, {
-  get: (_target, elementName: keyof JSX.IntrinsicElements) => {
+  get: (target, elementName: keyof JSX.IntrinsicElements) => {
+    if (typeof elementName === "symbol") {
+      return Reflect.get(target, elementName);
+    }
+
     if (CACHE.has(elementName)) {
       return CACHE.get(elementName);
     }
-    const refractiveComponent = createRefractiveComponent(({ children, ...props }) =>
-      createElement(elementName, props, children),
+    const refractiveComponent = createRefractiveComponent(
+      createHostComponent(elementName),
+      `refractive.${String(elementName)}`,
     );
     CACHE.set(elementName, refractiveComponent);
     return refractiveComponent;

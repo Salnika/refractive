@@ -1,6 +1,5 @@
-import { calculateDisplacementMap, calculateDisplacementMapRadius } from "../maps/displacement-map";
-import { calculateSpecularImage } from "../maps/specular";
 import { CompositeParts } from "./composite-parts";
+import { getFilterAssets } from "./filter-assets";
 
 type FilterProps = {
   id: string;
@@ -58,39 +57,13 @@ export const Filter: React.FC<FilterProps> = ({
   hideLeft,
   hideRight,
 }) => {
-  // Size of each corner area
-  // If bezelWidth < radius, corners will be in a circle shape
-  // If bezelWidth >= radius, corners will be in a rounded square shape
-  const cornerWidth = Math.max(radius, bezelWidth);
-
-  // Calculated image width and height are always odd,
-  // so we always have at least 1 pixel in the middle we can stretch
-  const imageSide = cornerWidth * 2 + 1;
-
-  const map = calculateDisplacementMapRadius(
+  const { cornerWidth, displacementParts, maximumDisplacement, specularParts } = getFilterAssets({
+    radius,
     glassThickness,
     bezelWidth,
-    bezelHeightFn,
     refractiveIndex,
-  );
-
-  const maximumDisplacement = Math.max(...map.map(Math.abs));
-
-  const displacementMap = calculateDisplacementMap({
-    width: imageSide,
-    height: imageSide,
-    radius,
-    bezelWidth,
-    precomputedDisplacementMap: map,
-    maximumDisplacement,
-    pixelRatio,
-  });
-
-  const specularMap = calculateSpecularImage({
-    width: imageSide,
-    height: imageSide,
-    radius,
     specularAngle,
+    bezelHeightFn,
     pixelRatio,
   });
 
@@ -101,11 +74,10 @@ export const Filter: React.FC<FilterProps> = ({
       <feGaussianBlur in="SourceGraphic" stdDeviation={blur} result="blurred_source" />
 
       <CompositeParts
-        imageData={displacementMap}
         width={width}
         height={height}
         cornerWidth={cornerWidth}
-        pixelRatio={pixelRatio}
+        parts={displacementParts}
         result="displacement_map"
         hideTop={hideTop}
         hideBottom={hideBottom}
@@ -114,11 +86,10 @@ export const Filter: React.FC<FilterProps> = ({
       />
 
       <CompositeParts
-        imageData={specularMap}
         width={width}
         height={height}
         cornerWidth={cornerWidth}
-        pixelRatio={pixelRatio}
+        parts={specularParts}
         result="specular_map"
         hideTop={hideTop}
         hideBottom={hideBottom}
@@ -155,7 +126,17 @@ export const Filter: React.FC<FilterProps> = ({
   );
 
   return (
-    <svg colorInterpolationFilters="sRGB" style={{ display: "none" }}>
+    <svg
+      aria-hidden="true"
+      colorInterpolationFilters="sRGB"
+      style={{
+        height: 0,
+        overflow: "hidden",
+        pointerEvents: "none",
+        position: "absolute",
+        width: 0,
+      }}
+    >
       <defs>{content}</defs>
     </svg>
   );
