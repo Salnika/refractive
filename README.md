@@ -2,15 +2,15 @@
 
 # refractive
 
-[![PR checks](https://github.com/salnika/refractive/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/salnika/refractive/actions/workflows/pr-checks.yml)
+Based on the [@hashintel/refractive](https://github.com/hashintel/hash/tree/main/libs/%40hashintel/refractive) lib
+
+## Links
+
+[![Tests](https://github.com/salnika/refractive/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/salnika/refractive/actions/workflows/pr-checks.yml)
 [![Storybook Pages](https://github.com/salnika/refractive/actions/workflows/storybook-pages.yml/badge.svg)](https://github.com/salnika/refractive/actions/workflows/storybook-pages.yml)
 [![Publish npm](https://github.com/salnika/refractive/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/salnika/refractive/actions/workflows/npm-publish.yml)
 [![npm version](https://img.shields.io/npm/v/refractive.svg)](https://www.npmjs.com/package/refractive)
 [![Storybook](https://img.shields.io/badge/storybook-live-ff4785?logo=storybook&logoColor=white)](https://salnika.github.io/refractive/)
-
-Based on the [@hashintel/refractive](https://github.com/hashintel/hash/tree/main/libs/%40hashintel/refractive) lib
-
-## Links
 
 - [Storybook](https://salnika.github.io/refractive/)
 - [npm package](https://www.npmjs.com/package/refractive)
