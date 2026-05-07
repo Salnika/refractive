@@ -10,11 +10,18 @@ export type RefractionOptions = {
   specularAngle?: number;
   bezelHeightFn?: (x: number) => number;
   pixelRatio?: number;
+  fallbackMode?: RefractionFallbackMode;
+  renderMode?: RefractionRenderMode;
+  snapshotMaxFps?: number;
+  snapshotRoot?: () => HTMLElement | null;
 };
 
 export type RefractionProps = {
   refraction: RefractionOptions;
 };
+
+export type RefractionFallbackMode = "snapshot" | "simple";
+export type RefractionRenderMode = "auto" | "native" | RefractionFallbackMode;
 
 export type NormalizedRefractionOptions = Required<RefractionOptions>;
 
@@ -50,6 +57,14 @@ function defaultPixelRatio(): number {
   }
 
   return clampOption(window.devicePixelRatio, 1, 1, 3);
+}
+
+function defaultSnapshotRoot(): HTMLElement | null {
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  return document.body;
 }
 
 function sanitizeSurfaceValue(value: number, x: number): number {
@@ -93,5 +108,9 @@ export function normalizeRefraction(refraction: RefractionOptions): NormalizedRe
     specularAngle: normalizeAngle(refraction.specularAngle),
     bezelHeightFn: getSafeSurfaceFunction(refraction.bezelHeightFn),
     pixelRatio: clampOption(refraction.pixelRatio, defaultPixelRatio(), 1, 3),
+    fallbackMode: refraction.fallbackMode ?? "snapshot",
+    renderMode: refraction.renderMode ?? "auto",
+    snapshotMaxFps: clampOption(refraction.snapshotMaxFps, 30, 1, 60),
+    snapshotRoot: refraction.snapshotRoot ?? defaultSnapshotRoot,
   };
 }

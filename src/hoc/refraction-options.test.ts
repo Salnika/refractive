@@ -39,7 +39,11 @@ describe("normalizeRefraction", () => {
       specularAngle: Math.PI / 4,
       bezelHeightFn: convex,
       pixelRatio: 1,
+      fallbackMode: "snapshot",
+      renderMode: "auto",
+      snapshotMaxFps: 30,
     });
+    expect(normalized.snapshotRoot()).toBe(null);
   });
 
   it("falls back when a custom surface function throws", () => {

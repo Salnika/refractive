@@ -21,4 +21,20 @@ describe("refractive", () => {
 
     expect(html).not.toContain("backdrop-filter");
   });
+
+  it("preserves user styles while applying refraction styles on the server", () => {
+    const html = renderToString(
+      <refractive.div
+        refraction={{ radius: 8, renderMode: "snapshot" }}
+        style={{ color: "red", position: "fixed" }}
+      >
+        Glass
+      </refractive.div>,
+    );
+
+    expect(html).toContain("color:red");
+    expect(html).toContain("position:fixed");
+    expect(html).toContain("border-radius:8px");
+    expect(html).not.toContain("<svg");
+  });
 });

@@ -1,5 +1,22 @@
 # refractive
 
+## 0.0.5
+
+### Added
+
+- Added `renderMode` with `"auto"`, `"native"`, `"snapshot"`, and `"simple"` rendering strategies.
+- Added `fallbackMode` so `renderMode: "auto"` can use either the high-fidelity `"snapshot"` fallback or the low-cost `"simple"` fallback outside Chromium.
+- Added a Firefox/Safari snapshot renderer powered by `@html2canvas/html2canvas`, including throttled recaptures for scroll, resize, pointer/touch movement, form input, DOM mutations, transitions, and animations.
+- Added `snapshotMaxFps` and `snapshotRoot` options to tune snapshot rendering cost and capture scope.
+- Added exported `RefractionRenderMode` and `RefractionFallbackMode` types.
+- Added Storybook controls for `renderMode`, `fallbackMode`, and `snapshotMaxFps`.
+
+### Changed
+
+- `renderMode: "auto"` now keeps the native SVG `backdrop-filter` path on Chromium and uses the configured fallback in Firefox/Safari.
+- The snapshot fallback now renders an internal filtered SVG layer behind component children and isolates stacking so user content remains interactive.
+- README documentation now explains rendering modes, the low-cost fallback, and browser/runtime limitations for native, snapshot, and simple rendering.
+
 ## 0.0.4
 
 ### Added

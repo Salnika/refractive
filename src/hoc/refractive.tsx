@@ -4,12 +4,16 @@ import type { JSX } from "react/jsx-runtime";
 
 import { Filter } from "../components/filter";
 import { FilterPortal } from "../components/filter-portal";
+import { SnapshotFilterLayer } from "../components/snapshot-filter-layer";
 import { assignRef } from "../helpers/assign-ref";
 import { type RefractionProps, normalizeRefraction } from "./refraction-options";
+import { resolveRefractionRenderMode } from "./render-mode";
+import { getRefractiveRootAttribute, useBackdropSnapshot } from "./use-backdrop-snapshot";
 import { useElementSize } from "./use-element-size";
 
 type RefractiveRef = Ref<HTMLElement>;
 type RefAwareProps = {
+  children?: ReactNode;
   ref?: RefractiveRef;
   style?: React.CSSProperties;
 };
@@ -28,12 +32,16 @@ function createRefractiveComponent<P extends RefAwareProps>(
   displayName = Component.name,
 ): ComponentType<P & RefractionProps> {
   const RefractiveComponent: ComponentType<P & RefractionProps> = (props) => {
-    const { refraction, ref: externalRef, ...componentProps } = props;
+    const { children, refraction, ref: externalRef, ...componentProps } = props;
     const reactId = useId();
     const filterId = `refractive-${reactId.replace(/:/g, "")}`;
     const [element, setElement] = useState<HTMLElement | null>(null);
     const { width, height } = useElementSize(element);
     const normalizedRefraction = normalizeRefraction(refraction);
+    const resolvedRenderMode = resolveRefractionRenderMode(
+      normalizedRefraction.renderMode,
+      normalizedRefraction.fallbackMode,
+    );
 
     const elementRef = useCallback(
       (nextElement: HTMLElement | null) => {
@@ -43,21 +51,42 @@ function createRefractiveComponent<P extends RefAwareProps>(
       [externalRef],
     );
 
-    const canRenderFilter =
-      width > 0 &&
-      height > 0 &&
-      typeof ImageData !== "undefined" &&
-      typeof document !== "undefined";
+    const canRenderBrowserEffect = width > 0 && height > 0 && typeof document !== "undefined";
+    const canRenderSvgFilter = canRenderBrowserEffect && typeof ImageData !== "undefined";
 
+    const shouldRenderNativeFilter = canRenderSvgFilter && resolvedRenderMode === "native";
+    const shouldRenderSnapshotFilter = canRenderSvgFilter && resolvedRenderMode === "snapshot";
+    const shouldRenderSimpleFilter = canRenderBrowserEffect && resolvedRenderMode === "simple";
+    const snapshotUrl = useBackdropSnapshot({
+      element,
+      enabled: shouldRenderSnapshotFilter,
+      height,
+      maxFps: normalizedRefraction.snapshotMaxFps,
+      root: normalizedRefraction.snapshotRoot,
+      width,
+    });
+    const filterValue = `url(#${filterId})`;
+    const simpleFilterValue =
+      shouldRenderSimpleFilter && normalizedRefraction.blur > 0
+        ? `blur(${normalizedRefraction.blur}px)`
+        : undefined;
     const componentStyle = {
       ...componentProps.style,
-      backdropFilter: canRenderFilter ? `url(#${filterId})` : undefined,
+      backdropFilter: shouldRenderNativeFilter ? filterValue : simpleFilterValue,
       borderRadius: normalizedRefraction.radius,
+      isolation: shouldRenderSnapshotFilter ? "isolate" : componentProps.style?.isolation,
+      position:
+        shouldRenderSnapshotFilter &&
+        (!componentProps.style?.position || componentProps.style.position === "static")
+          ? "relative"
+          : componentProps.style?.position,
+      WebkitBackdropFilter: shouldRenderNativeFilter ? filterValue : simpleFilterValue,
     };
+    const rootAttribute = getRefractiveRootAttribute();
 
     return (
       <>
-        {canRenderFilter ? (
+        {shouldRenderNativeFilter || shouldRenderSnapshotFilter ? (
           <FilterPortal>
             <Filter
               id={filterId}
@@ -77,7 +106,22 @@ function createRefractiveComponent<P extends RefAwareProps>(
           </FilterPortal>
         ) : null}
 
-        <Component {...(componentProps as unknown as P)} ref={elementRef} style={componentStyle} />
+        <Component
+          {...(componentProps as unknown as P)}
+          {...{ [rootAttribute]: "" }}
+          ref={elementRef}
+          style={componentStyle}
+        >
+          {shouldRenderSnapshotFilter ? (
+            <SnapshotFilterLayer
+              filterId={filterId}
+              height={height}
+              snapshotUrl={snapshotUrl}
+              width={width}
+            />
+          ) : null}
+          {children}
+        </Component>
       </>
     );
   };

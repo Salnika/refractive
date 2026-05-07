@@ -30,8 +30,9 @@ yarn add refractive
 The `refraction` prop allows you to customize the appearance of the effect.
 
 The HOC uses SVG filters to create the refractive effect, which is applied via the `backdrop-filter` CSS property.
+Firefox and Safari use a DOM snapshot fallback in the default `auto` mode because they do not reliably support advanced SVG filters in `backdrop-filter`.
 
-> Caution: `refractive` will override `style.backdropFilter` and `style.borderRadius` of the wrapped component.
+> Caution: `refractive` will override `style.backdropFilter`, `style.WebkitBackdropFilter`, and `style.borderRadius` of the wrapped component. Snapshot rendering may also set `position: relative` and `isolation: isolate` so its internal layer can sit behind your content.
 
 ### Example
 
@@ -73,23 +74,41 @@ const RefractiveButton = refractive(Button);
 
 All numeric options are normalized at runtime to keep filter generation bounded.
 
-| Option            | Default                                               | Range                                                               |
-| ----------------- | ----------------------------------------------------- | ------------------------------------------------------------------- |
-| `radius`          | required                                              | `0..120`                                                            |
-| `blur`            | `0`                                                   | `0..20`                                                             |
-| `glassThickness`  | `70`                                                  | `0..300`                                                            |
-| `bezelWidth`      | `0`                                                   | `0..120`                                                            |
-| `refractiveIndex` | `1.5`                                                 | `1..3`                                                              |
-| `specularOpacity` | `0`                                                   | `0..1`                                                              |
-| `specularAngle`   | `Math.PI / 4`                                         | finite radians, normalized to `0..2 * Math.PI`                      |
-| `pixelRatio`      | `min(devicePixelRatio, 3)` in browsers, `1` otherwise | `1..3`                                                              |
-| `bezelHeightFn`   | `convex`                                              | finite values are clamped to `0..1`; failures fall back to `convex` |
+| Option            | Default                                               | Range                                                                 |
+| ----------------- | ----------------------------------------------------- | --------------------------------------------------------------------- |
+| `radius`          | required                                              | `0..120`                                                              |
+| `blur`            | `0`                                                   | `0..20`                                                               |
+| `glassThickness`  | `70`                                                  | `0..300`                                                              |
+| `bezelWidth`      | `0`                                                   | `0..120`                                                              |
+| `refractiveIndex` | `1.5`                                                 | `1..3`                                                                |
+| `specularOpacity` | `0`                                                   | `0..1`                                                                |
+| `specularAngle`   | `Math.PI / 4`                                         | finite radians, normalized to `0..2 * Math.PI`                        |
+| `pixelRatio`      | `min(devicePixelRatio, 3)` in browsers, `1` otherwise | `1..3`                                                                |
+| `bezelHeightFn`   | `convex`                                              | finite values are clamped to `0..1`; failures fall back to `convex`   |
+| `fallbackMode`    | `"snapshot"`                                          | `"snapshot"` or `"simple"`; used by `renderMode: "auto"` off Chromium |
+| `renderMode`      | `"auto"`                                              | `"auto"`, `"native"`, `"snapshot"`, or `"simple"`                     |
+| `snapshotMaxFps`  | `30`                                                  | `1..60`; used only by snapshot rendering                              |
+| `snapshotRoot`    | `() => document.body`                                 | returns the element captured by snapshot rendering                    |
+
+## Rendering modes
+
+- `renderMode: "auto"` uses native `backdrop-filter: url(#filter)` in Chromium. In Firefox/Safari it uses `fallbackMode`, which defaults to `"snapshot"`.
+- `fallbackMode: "snapshot"` gives the closest visual match outside Chromium. It captures the backdrop into a canvas and applies the same SVG displacement/specular filter to that image.
+- `fallbackMode: "simple"` is the low-cost fallback. It keeps the element styling and uses only a native CSS `backdrop-filter: blur(...)`, so it does not load or run the DOM snapshot renderer.
+- `renderMode: "native"`, `"snapshot"`, or `"simple"` forces one renderer for debugging or app-level tradeoffs.
+
+## Limitations
+
+- Native SVG backdrop filters are not reliable in Firefox/Safari for advanced primitives such as `feDisplacementMap`, so the full effect cannot be achieved there with CSS alone.
+- Snapshot rendering is more expensive than native CSS. It recaptures on scroll, resize, pointer/touch movement, form input, DOM mutations, transitions, and animations, bounded by `snapshotMaxFps`.
+- Snapshot rendering has the normal html2canvas limits: cross-origin images need CORS, tainted canvases cannot be read, videos and some advanced CSS may not be reproduced exactly.
+- Snapshot rendering captures a moment in time. Very fast video, canvas, WebGL, or continuously animated backdrops may lag or look approximate.
+- Simple fallback is cheap and responsive, but it only applies blur. It does not reproduce displacement, specular highlights, refraction index, glass thickness, bezel shape, or custom surface equations.
 
 ## Notes
 
 - The wrapped component must accept a `ref` that points to the underlying DOM element.
 - Server rendering is supported: browser-only SVG filter assets are created only after the element is measured in the browser.
-- The effect uses SVG filters, canvas-generated data URLs, and CSS `backdrop-filter`; check target browser support before relying on it in production.
 - Each distinct refraction shape generates cached filter assets. Keep `radius`, `bezelWidth`, and `pixelRatio` modest when rendering many instances.
 
 # Development

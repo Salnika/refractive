@@ -1,6 +1,6 @@
 {
   "name": "refractive",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "improved HASH Refractive Filter Components",
   "license": "MIT",
   "repository": {
@@ -35,6 +35,9 @@
     "prepublishOnly": "vp build",
     "build-storybook": "storybook build",
     "prepare": "vp config"
+  },
+  "dependencies": {
+    "@html2canvas/html2canvas": "^1.6.3"
   },
   "devDependencies": {
     "@github-ui/storybook-addon-performance-panel": "^1.1.4",
