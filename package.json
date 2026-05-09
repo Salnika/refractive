@@ -1,6 +1,6 @@
 {
   "name": "refractive",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "React HOC for liquid-glass refractive effects using SVG backdrop filters, with native Chromium and cross-browser fallbacks",
   "keywords": [
     "backdrop-filter",

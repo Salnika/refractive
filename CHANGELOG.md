@@ -1,5 +1,27 @@
 # refractive
 
+## 0.0.6
+
+### Added
+
+- Added `useReducedMotion` hook and a `frozen` option on the snapshot loop so that snapshot rendering captures once and stops listening to backdrop changes when the user has set `prefers-reduced-motion: reduce`.
+- Added a development-only warning when `renderMode: "native"` is forced on a non-Chromium environment (Firefox, Safari, iOS WebKit), with idempotent emission per session and a silent path in production.
+- Added richer `package.json` metadata (`keywords`, `homepage`, `bugs`, `engines`) and a more descriptive `description` for npm discovery.
+- Added an Accessibility section to the README describing reduced-motion behavior.
+
+### Changed
+
+- Tightened ref typing in the refractive HOC: the wrapped element type now flows through a generic `E extends HTMLElement`, so `refractive.div` exposes `Ref<HTMLDivElement>` and `refractive(MyButton)` preserves `Ref<HTMLButtonElement>` instead of collapsing to `Ref<HTMLElement>`.
+- Replaced the `as unknown as P` prop cast in the HOC with a narrower `Omit<P, "children" | "ref">` cast, documented inline.
+- Excluded `.claude/**` from lint to keep agent worktrees out of the lint surface.
+
+### Fixed
+
+- Fixed the README install snippet to reference `pnpm add refractive` instead of the unsupported `vp add refractive`.
+- Fixed the JSDoc example in the refractive HOC to import from `refractive` rather than the legacy `@hashintel/refractive` name.
+- Fixed two `Diplacement` typos in displacement/circle map comments.
+- Added `.pnpm-store/` to `.gitignore`.
+
 ## 0.0.5
 
 ### Added
