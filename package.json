@@ -3,28 +3,25 @@
   "version": "0.0.5",
   "description": "React HOC for liquid-glass refractive effects using SVG backdrop filters, with native Chromium and cross-browser fallbacks",
   "keywords": [
-    "react",
-    "hoc",
-    "glass",
-    "liquid-glass",
-    "refractive",
     "backdrop-filter",
-    "svg-filter",
     "displacement-map",
     "frosted",
-    "specular"
+    "glass",
+    "hoc",
+    "liquid-glass",
+    "react",
+    "refractive",
+    "specular",
+    "svg-filter"
   ],
-  "license": "MIT",
   "homepage": "https://salnika.github.io/refractive/",
   "bugs": {
     "url": "https://github.com/Salnika/refractive/issues"
   },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/Salnika/refractive"
-  },
-  "engines": {
-    "node": ">=20"
   },
   "files": [
     "CHANGELOG.md",
@@ -76,6 +73,9 @@
   "peerDependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "packageManager": "pnpm@10.33.2"
 }

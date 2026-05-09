@@ -20,15 +20,11 @@ function createMockMediaQueryList(initialMatches: boolean): MockMediaQueryList {
     listeners,
     matches: initialMatches,
     media: "(prefers-reduced-motion: reduce)",
-    addEventListener: (type, listener) => {
-      if (type === "change") {
-        listeners.add(listener);
-      }
+    addEventListener: (_type, listener) => {
+      listeners.add(listener);
     },
-    removeEventListener: (type, listener) => {
-      if (type === "change") {
-        listeners.delete(listener);
-      }
+    removeEventListener: (_type, listener) => {
+      listeners.delete(listener);
     },
     dispatch(matches) {
       this.matches = matches;

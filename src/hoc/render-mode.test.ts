@@ -61,9 +61,10 @@ describe("resolveRefractionRenderMode", () => {
 });
 
 describe("warnIfForcedNativeOnNonChromium", () => {
-  let warnSpy: ReturnType<typeof vi.spyOn>;
-  const processEnv = (globalThis as { process: { env: Record<string, string | undefined> } })
-    .process.env;
+  let warnSpy: ReturnType<typeof vi.fn<Console["warn"]>>;
+  const processEnv = (
+    globalThis as unknown as { process: { env: Record<string, string | undefined> } }
+  ).process.env;
   const originalNodeEnv = processEnv.NODE_ENV;
 
   beforeEach(() => {
