@@ -8,6 +8,7 @@ storybook-static/
 .vite-hooks/
 .turbo/
 .pnpm-store/
+.claude
 
 .env
 .env.*
