@@ -48,6 +48,7 @@ type SnapshotCrop = {
 type BackdropSnapshotProps = {
   element: HTMLElement | null;
   enabled: boolean;
+  frozen?: boolean;
   height: number;
   maxFps: number;
   root: () => HTMLElement | null;
@@ -126,6 +127,7 @@ export function getSnapshotCrop(element: HTMLElement, root: HTMLElement): Snapsh
 export function useBackdropSnapshot({
   element,
   enabled,
+  frozen = false,
   height,
   maxFps,
   root,
@@ -246,11 +248,18 @@ export function useBackdropSnapshot({
       }
     };
 
+    scheduleCapture();
+
+    if (frozen) {
+      return () => {
+        disposed = true;
+        clearScheduledCapture();
+      };
+    }
+
     function scheduleFromEvent(): void {
       scheduleCapture();
     }
-
-    scheduleCapture();
 
     window.addEventListener("resize", scheduleFromEvent);
 
@@ -289,7 +298,7 @@ export function useBackdropSnapshot({
         window.removeEventListener(eventName, scheduleFromEvent, true);
       }
     };
-  }, [element, enabled, height, maxFps, root, width]);
+  }, [element, enabled, frozen, height, maxFps, root, width]);
 
   return snapshotUrl;
 }

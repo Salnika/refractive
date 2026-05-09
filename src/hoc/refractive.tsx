@@ -10,6 +10,7 @@ import { type RefractionProps, normalizeRefraction } from "./refraction-options"
 import { resolveRefractionRenderMode, warnIfForcedNativeOnNonChromium } from "./render-mode";
 import { getRefractiveRootAttribute, useBackdropSnapshot } from "./use-backdrop-snapshot";
 import { useElementSize } from "./use-element-size";
+import { useReducedMotion } from "./use-reduced-motion";
 
 type RefractiveRef = Ref<HTMLElement>;
 type RefAwareProps = {
@@ -37,6 +38,7 @@ function createRefractiveComponent<P extends RefAwareProps>(
     const filterId = `refractive-${reactId.replace(/:/g, "")}`;
     const [element, setElement] = useState<HTMLElement | null>(null);
     const { width, height } = useElementSize(element);
+    const reducedMotion = useReducedMotion();
     const normalizedRefraction = normalizeRefraction(refraction);
     const resolvedRenderMode = resolveRefractionRenderMode(
       normalizedRefraction.renderMode,
@@ -64,6 +66,7 @@ function createRefractiveComponent<P extends RefAwareProps>(
     const snapshotUrl = useBackdropSnapshot({
       element,
       enabled: shouldRenderSnapshotFilter,
+      frozen: reducedMotion,
       height,
       maxFps: normalizedRefraction.snapshotMaxFps,
       root: normalizedRefraction.snapshotRoot,

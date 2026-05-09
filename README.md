@@ -97,6 +97,10 @@ All numeric options are normalized at runtime to keep filter generation bounded.
 - `fallbackMode: "simple"` is the low-cost fallback. It keeps the element styling and uses only a native CSS `backdrop-filter: blur(...)`, so it does not load or run the DOM snapshot renderer.
 - `renderMode: "native"`, `"snapshot"`, or `"simple"` forces one renderer for debugging or app-level tradeoffs.
 
+## Accessibility
+
+- When `prefers-reduced-motion: reduce` is set, snapshot rendering captures the backdrop once and stops listening for scroll, pointer, transition, animation, or DOM mutation updates. The library reacts live to changes of the media query. Native and simple modes are unaffected because they are not animated by the library.
+
 ## Limitations
 
 - Native SVG backdrop filters are not reliable in Firefox/Safari for advanced primitives such as `feDisplacementMap`, so the full effect cannot be achieved there with CSS alone.
