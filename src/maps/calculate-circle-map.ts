@@ -2,7 +2,7 @@ import type { ProcessPixelFunction } from "./process-pixel.type";
 
 /**
  * Generates a circular (or rounded rectangle) map and allows processing of each pixel.
- * Used by Diplacement and Specular maps.
+ * Used by Displacement and Specular maps.
  */
 export function calculateCircleMap(props: {
   width: number;

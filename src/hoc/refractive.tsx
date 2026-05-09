@@ -182,7 +182,7 @@ function createHostComponent(
  * Usage with existing components:
  *
  * ```tsx
- * import { refractive } from "@hashintel/refractive";
+ * import { refractive } from "refractive";
  *
  * const MyRefractiveButton = refractive(MyButton);
  *

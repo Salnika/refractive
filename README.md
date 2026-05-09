@@ -19,7 +19,7 @@ Based on the [@hashintel/refractive](https://github.com/hashintel/hash/tree/main
 ## Install
 
 ```sh
-vp add refractive
+pnpm add refractive
 npm install refractive
 yarn add refractive
 ```
