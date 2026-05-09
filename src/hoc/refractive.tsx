@@ -1,4 +1,4 @@
-import type { ComponentType, ReactNode, Ref } from "react";
+import type { ComponentType, CSSProperties, ReactNode, Ref } from "react";
 import { createElement, useCallback, useEffect, useId, useState } from "react";
 import type { JSX } from "react/jsx-runtime";
 
@@ -12,15 +12,18 @@ import { getRefractiveRootAttribute, useBackdropSnapshot } from "./use-backdrop-
 import { useElementSize } from "./use-element-size";
 import { useReducedMotion } from "./use-reduced-motion";
 
-type RefractiveRef = Ref<HTMLElement>;
-type RefAwareProps = {
+/**
+ * Props the wrapped component must accept so the HOC can attach its `ref`,
+ * forward `children` and merge `style`. The element type `E` is inferred per
+ * call so `refractive(MyButton)` keeps `Ref<HTMLButtonElement>` in its public
+ * type rather than collapsing to `Ref<HTMLElement>`.
+ */
+type RefAwareProps<E extends HTMLElement = HTMLElement> = {
   children?: ReactNode;
-  ref?: RefractiveRef;
-  style?: React.CSSProperties;
+  ref?: Ref<E>;
+  style?: CSSProperties;
 };
-type HostComponentProps = RefAwareProps & {
-  children?: ReactNode;
-} & Record<string, unknown>;
+type HostComponentProps = RefAwareProps & Record<string, unknown>;
 
 /**
  * @private
@@ -28,7 +31,7 @@ type HostComponentProps = RefAwareProps & {
  *
  * Exposed in `refractive` proxy, which also exposes JSXIntrinsicElements as keys.
  */
-function createRefractiveComponent<P extends RefAwareProps>(
+function createRefractiveComponent<E extends HTMLElement, P extends RefAwareProps<E>>(
   Component: ComponentType<P>,
   displayName = Component.name,
 ): ComponentType<P & RefractionProps> {
@@ -36,7 +39,7 @@ function createRefractiveComponent<P extends RefAwareProps>(
     const { children, refraction, ref: externalRef, ...componentProps } = props;
     const reactId = useId();
     const filterId = `refractive-${reactId.replace(/:/g, "")}`;
-    const [element, setElement] = useState<HTMLElement | null>(null);
+    const [element, setElement] = useState<E | null>(null);
     const { width, height } = useElementSize(element);
     const reducedMotion = useReducedMotion();
     const normalizedRefraction = normalizeRefraction(refraction);
@@ -46,7 +49,7 @@ function createRefractiveComponent<P extends RefAwareProps>(
     );
 
     const elementRef = useCallback(
-      (nextElement: HTMLElement | null) => {
+      (nextElement: E | null) => {
         setElement(nextElement);
         assignRef(externalRef, nextElement);
       },
@@ -114,7 +117,12 @@ function createRefractiveComponent<P extends RefAwareProps>(
         ) : null}
 
         <Component
-          {...(componentProps as unknown as P)}
+          // TypeScript can't reconstruct `P` from the destructured rest
+          // (`Omit<P & RefractionProps, "children" | "refraction" | "ref">`)
+          // even though `children` and `ref` are immediately re-supplied below,
+          // so we narrow the rest to `Omit<P, "children" | "ref">` before
+          // widening back to `P`.
+          {...(componentProps as Omit<P, "children" | "ref"> as P)}
           {...{ [rootAttribute]: "" }}
           ref={elementRef}
           style={componentStyle}
@@ -144,7 +152,7 @@ type HTMLElements = {
   [K in keyof JSX.IntrinsicElements]: ComponentType<JSX.IntrinsicElements[K] & RefractionProps>;
 };
 
-type RefractiveFunction = (<P extends object>(
+type RefractiveFunction = (<E extends HTMLElement, P extends RefAwareProps<E>>(
   Component: ComponentType<P>,
 ) => ComponentType<P & RefractionProps>) &
   HTMLElements;
