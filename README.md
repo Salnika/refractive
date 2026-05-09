@@ -19,7 +19,7 @@ Based on the [@hashintel/refractive](https://github.com/hashintel/hash/tree/main
 ## Install
 
 ```sh
-vp add refractive
+pnpm add refractive
 npm install refractive
 yarn add refractive
 ```
@@ -96,6 +96,10 @@ All numeric options are normalized at runtime to keep filter generation bounded.
 - `fallbackMode: "snapshot"` gives the closest visual match outside Chromium. It captures the backdrop into a canvas and applies the same SVG displacement/specular filter to that image.
 - `fallbackMode: "simple"` is the low-cost fallback. It keeps the element styling and uses only a native CSS `backdrop-filter: blur(...)`, so it does not load or run the DOM snapshot renderer.
 - `renderMode: "native"`, `"snapshot"`, or `"simple"` forces one renderer for debugging or app-level tradeoffs.
+
+## Accessibility
+
+- When `prefers-reduced-motion: reduce` is set, snapshot rendering captures the backdrop once and stops listening for scroll, pointer, transition, animation, or DOM mutation updates. The library reacts live to changes of the media query. Native and simple modes are unaffected because they are not animated by the library.
 
 ## Limitations
 

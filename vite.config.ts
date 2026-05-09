@@ -147,7 +147,15 @@ export default defineConfig({
       "no-throw-literal": "off",
       "prefer-promise-reject-errors": "off",
     },
-    ignorePatterns: ["dist/**", "build/**", "coverage/**", "*.gen.*", "*.tsbuildinfo", ".turbo/**"],
+    ignorePatterns: [
+      ".claude/**",
+      "dist/**",
+      "build/**",
+      "coverage/**",
+      "*.gen.*",
+      "*.tsbuildinfo",
+      ".turbo/**",
+    ],
     options: {
       typeAware: true,
       typeCheck: true,
