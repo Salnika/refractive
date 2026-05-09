@@ -1,5 +1,5 @@
 import type { ComponentType, ReactNode, Ref } from "react";
-import { createElement, useCallback, useId, useState } from "react";
+import { createElement, useCallback, useEffect, useId, useState } from "react";
 import type { JSX } from "react/jsx-runtime";
 
 import { Filter } from "../components/filter";
@@ -7,7 +7,7 @@ import { FilterPortal } from "../components/filter-portal";
 import { SnapshotFilterLayer } from "../components/snapshot-filter-layer";
 import { assignRef } from "../helpers/assign-ref";
 import { type RefractionProps, normalizeRefraction } from "./refraction-options";
-import { resolveRefractionRenderMode } from "./render-mode";
+import { resolveRefractionRenderMode, warnIfForcedNativeOnNonChromium } from "./render-mode";
 import { getRefractiveRootAttribute, useBackdropSnapshot } from "./use-backdrop-snapshot";
 import { useElementSize } from "./use-element-size";
 
@@ -50,6 +50,10 @@ function createRefractiveComponent<P extends RefAwareProps>(
       },
       [externalRef],
     );
+
+    useEffect(() => {
+      warnIfForcedNativeOnNonChromium(normalizedRefraction.renderMode);
+    }, [normalizedRefraction.renderMode]);
 
     const canRenderBrowserEffect = width > 0 && height > 0 && typeof document !== "undefined";
     const canRenderSvgFilter = canRenderBrowserEffect && typeof ImageData !== "undefined";
